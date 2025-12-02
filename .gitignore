@@ -1,0 +1,13 @@
+# Node.js
+node_modules/
+dist/
+dist-electron/
+release/
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
