@@ -50,6 +50,12 @@
     "perf": "AI PO POLSKU: O(?) + optymalizacje - dlaczego?"
   },
 
+  "jules": {
+    "status": "idle",
+    "task": "N/A",
+    "last_activity": "N/A"
+  },
+
   "risk": {
     "cvss": "AI: 0-10 PO POLSKU: dlaczego?",
     "desc": "AI PO POLSKU: Luka + scenariusz + jak doszedłem"
