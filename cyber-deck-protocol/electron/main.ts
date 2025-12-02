@@ -6,7 +6,7 @@ const isDev = !!process.env.VITE_DEV_SERVER_URL;
 const dist = path.join(__dirname, "../dist");
 const preload = path.join(__dirname, "../dist-electron/preload.js");
 
-let win;
+let win: BrowserWindow | null = null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -15,8 +15,12 @@ function createWindow() {
     show: false,
     webPreferences: { preload, contextIsolation: true, nodeIntegration: false }
   });
-  isDev ? win.loadURL(process.env.VITE_DEV_SERVER_URL) : win.loadFile(path.join(dist, "index.html"));
-  win.once("ready-to-show", () => win.show());
+  if (isDev && process.env.VITE_DEV_SERVER_URL) {
+    win.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else {
+    win.loadFile(path.join(dist, "index.html"));
+  }
+  win.once("ready-to-show", () => win?.show());
   if (isDev) win.webContents.openDevTools({ mode: "detach" });
 }
 
