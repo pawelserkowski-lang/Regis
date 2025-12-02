@@ -44,5 +44,6 @@ except Exception as e:
 
 finally:
     logging.info("=== REGIS CLI END ===")
-    print("\nNaciśnij Enter, żeby zamknąć...")
-    input()
+    # Removed input() to avoid hanging in CI/headless environments
+    # print("\nNaciśnij Enter, żeby zamknąć...")
+    # input()
