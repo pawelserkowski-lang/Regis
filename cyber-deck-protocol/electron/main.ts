@@ -22,18 +22,46 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
+function getProtocolPath() {
+  // W wersji dev: katalog projektu (process.cwd() lub obok kodu)
+  // W wersji prod: katalog danych użytkownika (userData), aby uniknąć problemów z uprawnieniami/cwd
+  if (isDev) {
+    return path.join(process.cwd(), "GEMINI.md");
+  } else {
+    return path.join(app.getPath("userData"), "GEMINI.md");
+  }
+}
+
 ipcMain.handle("protocol:read", async () => {
+  const targetPath = getProtocolPath();
+
+  // Próba odczytu z docelowej ścieżki
+  if (fs.existsSync(targetPath)) {
+    return await fs.promises.readFile(targetPath, "utf-8");
+  }
+
+  // Fallback dla dev (wsteczna kompatybilność/szukanie w źródłach)
   const candidates = [
-    path.join(process.cwd(), "GEMINI.md"),
-    path.join(__dirname, "../../GEMINI.md")
+    path.join(__dirname, "../../GEMINI.md"),
+    path.join(process.cwd(), "GEMINI.md")
   ];
+
   for (const p of candidates) {
     if (fs.existsSync(p)) return await fs.promises.readFile(p, "utf-8");
   }
+
+  // Jeśli nie ma nigdzie, stwórz domyślny w bezpiecznym miejscu (dla produkcji)
+  if (!isDev) {
+      const defaultContent = "# CYBERDECK v27.5.1\n\nProtocol initialized.";
+      await fs.promises.writeFile(targetPath, defaultContent);
+      return defaultContent;
+  }
+
   return "# PROTOCOL NOT FOUND";
 });
 
 ipcMain.handle("protocol:save", async (_, content) => {
-  await fs.promises.writeFile(path.join(process.cwd(), "GEMINI.md"), content);
+  const targetPath = getProtocolPath();
+  await fs.promises.writeFile(targetPath, content);
   return true;
 });
