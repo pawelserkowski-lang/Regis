@@ -37,6 +37,15 @@ class RegisAgent:
         self.data["status"] = status
         self.data["mode"] = mode
 
+    def update_jules(self, status, task, activity):
+        """Aktualizuje sekcję Jules."""
+        if "jules" not in self.data:
+            self.data["jules"] = {}
+
+        self.data["jules"]["status"] = status
+        self.data["jules"]["task"] = task
+        self.data["jules"]["last_activity"] = activity
+
     def save_report(self):
         """Zapisuje aktualny stan do pliku raportu."""
         with open(self.report_path, "w", encoding="utf-8") as f:
@@ -53,14 +62,22 @@ class RegisAgent:
             "✓ [0:15] Detekcja → Python 3.x",
             "✓ [0:30] Analiza → 1 krytyczny, 2 wysokie",
             "⚙ [0:45] Research → 3/6 wyszukiwań",
-            "⏳ [1:30] Agenci → oczekuje"
+            "⏳ [1:30] Agenci → Regis, Jules"
         ]
         self.update_progress(
             phase="AI: [3/8] Research - 65% ███████░░░",
             steps=steps,
             eta="~3m 15s",
-            log_entry="AI: Ostatnie: [2:42] ✅ CVSS 9.8 potwierdzony | Teraz: 🔍 Searching input validation..."
+            log_entry="AI: Ostatnie: [2:42] ✅ CVSS 9.8 potwierdzony | Teraz: 🔍 Jules analyzing protocol..."
         )
+
+        # Symulacja Julesa
+        self.update_jules(
+            status="active",
+            task="Analiza bezpieczeństwa protokołu",
+            activity="Skanowanie zależności pod kątem podatności"
+        )
+
         self.save_report()
 
 if __name__ == "__main__":

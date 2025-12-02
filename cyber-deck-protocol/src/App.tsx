@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GlassCard } from "./components/GlassCard";
+import { JulesCard } from "./components/JulesCard";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import { Cpu, Save, Sparkles } from "lucide-react";
@@ -7,9 +8,26 @@ import { Cpu, Save, Sparkles } from "lucide-react";
 export default function App() {
   const [protocol, setProtocol] = useState("Ładowanie protokołu...");
   const [edit, setEdit] = useState(false);
+  const [statusReport, setStatusReport] = useState(null);
 
   useEffect(() => {
     window.api.readProtocol().then(setProtocol).catch(() => setProtocol("# Błąd ładowania"));
+
+    const fetchStatus = () => {
+        window.api.readStatus()
+            .then(json => {
+                try {
+                    setStatusReport(JSON.parse(json));
+                } catch (e) {
+                    console.error("Failed to parse status report", e);
+                }
+            })
+            .catch(err => console.error(err));
+    };
+
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 3000); // Poll every 3 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const save = () => window.api.saveProtocol(protocol).then(() => setEdit(false));
@@ -43,8 +61,8 @@ export default function App() {
           )}
         </GlassCard>
       </div>
-      <div className="w-1/2 bg-gradient-to-br from-cyber-primary/5 via-transparent to-cyber-accent/5 flex items-center justify-center">
-        <div className="text-cyber-primary/30 text-9xl font-bold select-none">NEON</div>
+      <div className="w-1/2 p-8">
+        <JulesCard report={statusReport} />
       </div>
     </div>
   );

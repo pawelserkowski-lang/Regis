@@ -60,6 +60,24 @@ ipcMain.handle("protocol:read", async () => {
   return "# PROTOCOL NOT FOUND";
 });
 
+ipcMain.handle("status:read", async () => {
+  // Ścieżka do status_report.json (w root projektu)
+  // W dev: ../status_report.json (relatywnie do cyber-deck-protocol)
+  // W prod: userData/status_report.json (zakładając że tam trafi)
+
+  let targetPath;
+  if (isDev) {
+    targetPath = path.join(process.cwd(), "../status_report.json");
+  } else {
+    targetPath = path.join(app.getPath("userData"), "status_report.json");
+  }
+
+  if (fs.existsSync(targetPath)) {
+    return await fs.promises.readFile(targetPath, "utf-8");
+  }
+  return "{}";
+});
+
 ipcMain.handle("protocol:save", async (_, content) => {
   const targetPath = getProtocolPath();
   await fs.promises.writeFile(targetPath, content);
