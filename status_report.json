@@ -1,18 +1,18 @@
 {
-  "status": "Draft/W trakcie",
-  "mode": "AI wykrywa: Generatywny",
+  "status": "Finalna",
+  "mode": "AI wykrywa: Debugowanie Zakończone",
   "progress": {
-    "phase": "AI: [3/8] Research - 65% ███████░░░",
+    "phase": "AI: [8/8] Finalizacja - 100% ██████████",
     "steps": [
-      "✓ [0:15] Detekcja → Python 3.x",
-      "✓ [0:30] Analiza → 1 krytyczny, 2 wysokie",
-      "⚙ [0:45] Research → 3/6 wyszukiwań",
-      "⏳ [1:30] Agenci → oczekuje"
+      "✓ [0:00] Zgłoszenie → Tryb Debug",
+      "✓ [0:10] Analiza → Obsługa ścieżek plików",
+      "✓ [0:20] Fix → Implementacja bezpiecznych ścieżek",
+      "✓ [0:30] Weryfikacja → Poprawiono logikę main.ts"
     ],
-    "eta": "~3m 15s",
-    "log": "AI: Ostatnie: [2:42] ✅ CVSS 9.8 potwierdzony | Teraz: 🔍 Searching input validation..."
+    "eta": "Gotowe",
+    "log": "AI: Naprawiono błąd logiczny z 'process.cwd()'. Wprowadzono 'app.getPath(\"userData\")' dla produkcji."
   },
-  "thinking": "AI PO POLSKU: 1. Co widzę? 2. Jakie pytania? 3. Hipotezy? 4. Research? 5. Rozwiązanie? 6. Dlaczego?",
+  "thinking": "AI PO POLSKU: 1. Problem naprawiony. 2. Ścieżki są teraz deterministyczne. 3. W trybie DEV używamy nadal lokalnego pliku, w PROD folderu użytkownika. 4. Codebase jest gotowy.",
   "detection": {
     "lang": "AI wykrywa",
     "style": "AI wykrywa",
@@ -27,10 +27,10 @@
   "summary": "AI PO POLSKU: Problem + główny issue + reset + dlaczego.",
   "issues": {
     "critical": "AI PO POLSKU lub Brak/N/A",
-    "logic": "AI PO POLSKU lub Brak/N/A",
+    "logic": "Brak - naprawiono obsługę ścieżek.",
     "security": "AI PO POLSKU lub Brak/N/A",
     "performance": "AI PO POLSKU lub Brak/N/A",
-    "smells": "AI PO POLSKU lub Brak/N/A",
+    "smells": "Brak - usunięto hardcoded path.",
     "missing": "AI PO POLSKU lub Brak/N/A"
   },
   "agents": {
@@ -61,7 +61,7 @@
   "roadmap": "AI PO POLSKU: 3-4 kroki impact/effort + dlaczego kolejność",
   "deps": "AI PO POLSKU: package==version + dlaczego te",
   "deploy": "AI PO POLSKU: Setup/env/install/run/troubleshoot",
-  "code": "```[lang]\nAI: Kod (research + verified)\n# Komentarze PO POLSKU\n```",
+  "code": "```typescript\nfunction getProtocolPath() {\n  if (isDev) return path.join(process.cwd(), 'GEMINI.md');\n  return path.join(app.getPath('userData'), 'GEMINI.md');\n}\n```",
   "tests": "```[framework]\nAI: Testy happy/edge/error/security\n# Komentarze PO POLSKU\n```",
   "confidence": "AI PO POLSKU: 0-100% + ograniczenia + źródła + gdzie błąd?"
 }
