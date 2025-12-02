@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("api", {
   readProtocol: () => ipcRenderer.invoke("protocol:read"),
-  saveProtocol: (c) => ipcRenderer.invoke("protocol:save", c),
-  readStatus: () => ipcRenderer.invoke("status:read")
+  saveProtocol: (c) => ipcRenderer.invoke("protocol:save", c)
 });
