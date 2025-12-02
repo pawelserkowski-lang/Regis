@@ -6,11 +6,15 @@ import { Cpu, Save, Sparkles } from "lucide-react";
 
 export default function App() {
   const [protocol, setProtocol] = useState("Ładowanie protokołu...");
+  const [activeFile, setActiveFile] = useState("GEMINI.md");
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    window.api.readProtocol().then(setProtocol).catch(() => setProtocol("# Błąd ładowania"));
-  }, []);
+    setProtocol("Ładowanie...");
+    window.api.readProtocol(activeFile)
+      .then(setProtocol)
+      .catch(() => setProtocol("# Błąd ładowania"));
+  }, [activeFile]);
 
   const save = () => window.api.saveProtocol(protocol).then(() => setEdit(false));
 
@@ -23,6 +27,20 @@ export default function App() {
               <Cpu className="text-cyber-primary" size={40} />
               <h1 className="text-4xl font-bold text-cyber-primary tracking-widest">CYBERDECK v27.5.1</h1>
             </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveFile("GEMINI.md")}
+                className={`px-4 py-2 rounded-lg transition ${activeFile === "GEMINI.md" ? "bg-cyber-primary text-black" : "bg-cyber-primary/10 hover:bg-cyber-primary/30"}`}
+              >
+                PROT
+              </button>
+              <button
+                onClick={() => setActiveFile("DEBATE.md")}
+                className={`px-4 py-2 rounded-lg transition ${activeFile === "DEBATE.md" ? "bg-cyber-primary text-black" : "bg-cyber-primary/10 hover:bg-cyber-primary/30"}`}
+              >
+                DEBATE
+              </button>
+            </div>
             <button onClick={() => setEdit(!edit)} className="px-5 py-3 bg-cyber-primary/20 hover:bg-cyber-primary/40 rounded-lg flex items-center gap-2 transition">
               <Sparkles size={22} /> {edit ? "Podgląd" : "Edytuj"}
             </button>
@@ -30,7 +48,7 @@ export default function App() {
 
           {edit ? (
             <div className="flex-1 flex flex-col">
-              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={setProtocol}
+              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={(v) => setProtocol(v || "")}
                 theme="vs-dark" options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: "on" }} />
               <button onClick={save} className="mt-4 self-end px-8 py-3 bg-cyber-primary text-black font-bold rounded-lg hover:scale-105 transition flex items-center gap-2">
                 <Save size={22} /> Zapisz
