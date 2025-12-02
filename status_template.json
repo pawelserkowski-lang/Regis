@@ -1,0 +1,86 @@
+{
+  "status": "Draft/W trakcie/Finalna",
+  "mode": "AI wykrywa: Generatywny/Debugowanie/Stack_Trace",
+
+  "progress": {
+    "phase": "AI: [3/8] Research - 65% ███████░░░",
+    "steps": [
+      "✓ [0:15] Detekcja → Python 3.x",
+      "✓ [0:30] Analiza → 1 krytyczny, 2 wysokie",
+      "⚙ [0:45] Research → 3/6 wyszukiwań",
+      "⏳ [1:30] Agenci → oczekuje",
+      "⏳ [2:00] Kod → oczekuje",
+      "⏳ [2:30] Testy → oczekuje",
+      "⏳ [3:00] Docs → oczekuje",
+      "⏳ [3:15] Finalizacja → oczekuje"
+    ],
+    "eta": "~3m 15s",
+    "log": "AI: Ostatnie: [2:42] ✅ CVSS 9.8 potwierdzony | Teraz: 🔍 Searching input validation..."
+  },
+
+  "thinking": "AI PO POLSKU: 1. Co widzę? 2. Jakie pytania? 3. Hipotezy? 4. Research? 5. Rozwiązanie? 6. Dlaczego?",
+
+  "detection": {
+    "lang": "AI wykrywa",
+    "style": "AI wykrywa",
+    "framework": "AI wykrywa",
+    "maturity": "AI ocenia"
+  },
+
+  "research": {
+    "required": true,
+    "queries": "AI PO POLSKU: Lista wyszukiwań + wyniki",
+    "findings": "AI PO POLSKU: Kluczowe odkrycia"
+  },
+
+  "summary": "AI PO POLSKU: Problem + główny issue + reset + dlaczego.",
+
+  "issues": {
+    "critical": "AI PO POLSKU lub Brak/N/A",
+    "logic": "AI PO POLSKU lub Brak/N/A",
+    "security": "AI PO POLSKU lub Brak/N/A",
+    "performance": "AI PO POLSKU lub Brak/N/A",
+    "smells": "AI PO POLSKU lub Brak/N/A",
+    "missing": "AI PO POLSKU lub Brak/N/A"
+  },
+
+  "agents": {
+    "logic": "AI PO POLSKU: Logika OK? Edge cases? Jak weryfikowałem?",
+    "security": "AI PO POLSKU: OWASP scan - co znalazłem?",
+    "perf": "AI PO POLSKU: O(?) + optymalizacje - dlaczego?"
+  },
+
+  "risk": {
+    "cvss": "AI: 0-10 PO POLSKU: dlaczego?",
+    "desc": "AI PO POLSKU: Luka + scenariusz + jak doszedłem"
+  },
+
+  "proof": {
+    "bad": "AI PO POLSKU: Zły kod + dlaczego źle",
+    "fix": "AI PO POLSKU: Zasady naprawy + dlaczego te"
+  },
+
+  "qa": {
+    "score": "AI PO POLSKU: 0-100% + jak liczyłem",
+    "style": "AI PO POLSKU: Naruszenia lub Zgodny",
+    "docs": "AI PO POLSKU: Pełny/Częściowy/Brak",
+    "security": "AI PO POLSKU: Luki lub Bezpieczny",
+    "perf": "AI PO POLSKU: O(?) + metrics"
+  },
+
+  "tradeoffs": {
+    "summary": "AI PO POLSKU: Kompromisy - A vs B?",
+    "debt": "AI PO POLSKU: Niski/Średni/Wysoki + dlaczego"
+  },
+
+  "ethics": "AI PO POLSKU: RODO/bias/prywatność lub N/A",
+  "roadmap": "AI PO POLSKU: 3-4 kroki impact/effort + dlaczego kolejność",
+  "deps": "AI PO POLSKU: package==version + dlaczego te",
+  "deploy": "AI PO POLSKU: Setup/env/install/run/troubleshoot",
+
+  "code": "```[lang]\nAI: Kod (research + verified)\n# Komentarze PO POLSKU\n```",
+
+  "tests": "```[framework]\nAI: Testy happy/edge/error/security\n# Komentarze PO POLSKU\n```",
+
+  "confidence": "AI PO POLSKU: 0-100% + ograniczenia + źródła + gdzie błąd?"
+}
