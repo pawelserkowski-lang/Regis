@@ -1,3 +1,53 @@
-@tailwind base; @tailwind components; @tailwind utilities;
-html,body,#root{height:100%;margin:0;overflow:hidden;background:#050a0f}
-::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:rgba(45,212,191,0.6);border-radius:4px}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background-color: #020403;
+  color: #ecfdf5;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020403;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #059669;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+/* Typography Overrides */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fira Code', monospace;
+  color: #00ff88;
+}
+
+/* Markdown Styles since we don't have typography plugin */
+.prose h1 { font-size: 2em; font-weight: bold; margin-bottom: 0.5em; color: #00ff88; border-bottom: 1px solid #064e3b; padding-bottom: 0.2em; }
+.prose h2 { font-size: 1.5em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; color: #ccff00; }
+.prose h3 { font-size: 1.25em; font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; color: #10b981; }
+.prose p { margin-bottom: 1em; line-height: 1.6; color: #d1fae5; }
+.prose code { background: #064e3b; padding: 0.2em 0.4em; rounded: 4px; font-family: monospace; color: #00ff88; }
+.prose pre { background: #020403; padding: 1em; border-radius: 8px; border: 1px solid #064e3b; overflow-x: auto; }
+.prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+.prose li { margin-bottom: 0.25em; }
+.prose strong { color: #00ff88; font-weight: bold; }
+.prose a { color: #ccff00; text-decoration: underline; }
+.prose blockquote { border-left: 4px solid #00ff88; padding-left: 1em; font-style: italic; color: #34d399; }
