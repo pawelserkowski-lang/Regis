@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GlassCard } from "./components/GlassCard";
+import { CyberChat } from "./components/CyberChat";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import { Cpu, Save, Sparkles } from "lucide-react";
@@ -9,10 +10,25 @@ export default function App() {
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    window.api.readProtocol().then(setProtocol).catch(() => setProtocol("# Błąd ładowania"));
+    // Check if window.api exists
+    if (window.api) {
+        window.api.readProtocol().then(setProtocol).catch(() => setProtocol("# Błąd ładowania"));
+    } else {
+        setProtocol("# Błąd: window.api not available (Browser mode)");
+    }
   }, []);
 
-  const save = () => window.api.saveProtocol(protocol).then(() => setEdit(false));
+  const save = () => {
+    if (window.api) {
+        window.api.saveProtocol(protocol).then(() => setEdit(false));
+    }
+  };
+
+  const handleEditorChange = (value: string | undefined) => {
+    if (value !== undefined) {
+      setProtocol(value);
+    }
+  };
 
   return (
     <div className="h-screen w-screen bg-cyber-bg text-white flex">
@@ -30,7 +46,7 @@ export default function App() {
 
           {edit ? (
             <div className="flex-1 flex flex-col">
-              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={setProtocol}
+              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={handleEditorChange}
                 theme="vs-dark" options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: "on" }} />
               <button onClick={save} className="mt-4 self-end px-8 py-3 bg-cyber-primary text-black font-bold rounded-lg hover:scale-105 transition flex items-center gap-2">
                 <Save size={22} /> Zapisz
@@ -43,8 +59,10 @@ export default function App() {
           )}
         </GlassCard>
       </div>
-      <div className="w-1/2 bg-gradient-to-br from-cyber-primary/5 via-transparent to-cyber-accent/5 flex items-center justify-center">
-        <div className="text-cyber-primary/30 text-9xl font-bold select-none">NEON</div>
+      <div className="w-1/2 p-8 pl-0">
+        <GlassCard className="h-full flex flex-col">
+          <CyberChat protocol={protocol} />
+        </GlassCard>
       </div>
     </div>
   );
