@@ -5,14 +5,48 @@ import ReactMarkdown from "react-markdown";
 import { Cpu, Save, Sparkles } from "lucide-react";
 
 export default function App() {
-  const [protocol, setProtocol] = useState("Ładowanie protokołu...");
+  const [protocol, setProtocol] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [edit, setEdit] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    window.api.readProtocol().then(setProtocol).catch(() => setProtocol("# Błąd ładowania"));
+    setIsLoading(true);
+    window.api.readProtocol()
+      .then((content) => {
+        setProtocol(content);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to load protocol:", err);
+        setError("Nie udało się załadować protokołu.");
+        setProtocol("# Błąd ładowania");
+        setIsLoading(false);
+      });
   }, []);
 
-  const save = () => window.api.saveProtocol(protocol).then(() => setEdit(false));
+  const save = async () => {
+    try {
+      await window.api.saveProtocol(protocol);
+      setEdit(false);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to save protocol:", err);
+      setError("Błąd zapisu! Sprawdź logi.");
+      // Optional: use a toast notification here instead of alert
+      alert("Błąd zapisu protokołu!");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-screen bg-cyber-bg text-white flex items-center justify-center">
+        <div className="text-cyber-primary animate-pulse text-2xl tracking-widest">
+          INITIALIZING NEURAL LINK...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen w-screen bg-cyber-bg text-white flex">
@@ -28,10 +62,22 @@ export default function App() {
             </button>
           </div>
 
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded text-red-200">
+              ⚠️ {error}
+            </div>
+          )}
+
           {edit ? (
             <div className="flex-1 flex flex-col">
-              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={setProtocol}
-                theme="vs-dark" options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: "on" }} />
+              <Editor
+                height="100%"
+                defaultLanguage="markdown"
+                value={protocol}
+                onChange={(val) => setProtocol(val || "")}
+                theme="vs-dark"
+                options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: "on" }}
+              />
               <button onClick={save} className="mt-4 self-end px-8 py-3 bg-cyber-primary text-black font-bold rounded-lg hover:scale-105 transition flex items-center gap-2">
                 <Save size={22} /> Zapisz
               </button>
