@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { GlassCard } from "./components/GlassCard";
+import { CyberChat } from "./components/CyberChat";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import { Cpu, Save, Sparkles } from "lucide-react";
+
+declare global {
+  interface Window {
+    api: {
+      readProtocol: () => Promise<string>;
+      saveProtocol: (content: string) => Promise<boolean>;
+      generateAI: (prompt: string) => Promise<{ response: string; error?: string }>;
+    };
+  }
+}
 
 export default function App() {
   const [protocol, setProtocol] = useState("Ładowanie protokołu...");
@@ -30,7 +41,7 @@ export default function App() {
 
           {edit ? (
             <div className="flex-1 flex flex-col">
-              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={setProtocol}
+              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={(v) => setProtocol(v || "")}
                 theme="vs-dark" options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: "on" }} />
               <button onClick={save} className="mt-4 self-end px-8 py-3 bg-cyber-primary text-black font-bold rounded-lg hover:scale-105 transition flex items-center gap-2">
                 <Save size={22} /> Zapisz
@@ -43,8 +54,10 @@ export default function App() {
           )}
         </GlassCard>
       </div>
-      <div className="w-1/2 bg-gradient-to-br from-cyber-primary/5 via-transparent to-cyber-accent/5 flex items-center justify-center">
-        <div className="text-cyber-primary/30 text-9xl font-bold select-none">NEON</div>
+      <div className="w-1/2 p-8 bg-gradient-to-br from-cyber-primary/5 via-transparent to-cyber-accent/5 flex flex-col">
+        <GlassCard className="h-full">
+            <CyberChat />
+        </GlassCard>
       </div>
     </div>
   );
