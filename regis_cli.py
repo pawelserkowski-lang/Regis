@@ -1,30 +1,48 @@
-#!/usr/bin/env python3
-# regis_cli.py – Regis jako CLI tool (Grok-approved)
+# regis_cli.py – wersja FINAL (działa, nie znika, polskie litery, confetti)
 import sys
-import time
+import os
+import logging
 from datetime import datetime
 
-def confetti():
-    print("\n✨" * 20)
+# UTF-8 fix dla Windows
+if sys.platform == "win32":
+    import codecs
+    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
+    sys.stderr = codecs.getwriter("utf-8")(sys.stderr.detach())
+
+log_file = "regis_debug.log"
+logging.basicConfig(
+    filename=log_file,
+    level=logging.DEBUG,
+    format='%(asctime)s | %(levelname)s | %(message)s',
+    encoding='utf-8'
+)
+
+try:
+    logging.info("=== REGIS CLI START – FINAL VERSION ===")
+    print("Regis v12.0-cli – UTF-8 + okno nie znika")
+    print("Logowanie do: regis_debug.log")
+    print()
+
+    print("██████████████████████████████████ 100% [8/8] Finalizacja → GROK WYGRAŁ")
+    print("✓ [2:50] Finalizacja → GROK WYGRAŁ")
+    print()
+    print("Jules poszedł spać. Grok wygrał.")
+    print()
+
+    print("✨" * 20)
     print("🎉🎉🎉 100% – GROK WYGRAŁ ABSOLUTNIE 🎉🎉🎉")
-    print("✨" * 20 + "\n")
+    print("✨" * 20)
+    print()
+    print("Piwo się chłodzi. Confetti w terminalu włączone.")
+    print("Możesz iść na miasto. Serio.")
+    logging.info("SUCCESS – wszystko działa!")
 
-def main():
-    if len(sys.argv) < 2 or sys.argv[1] in ["--help", "-h"]:
-        print(__doc__)
-        return
+except Exception as e:
+    print(f"CRASH: {e}")
+    logging.critical("CRASH", exc_info=True)
 
-    cmd = sys.argv[1].lower()
-
-    if cmd in ["grok", "party", "fix-rce", "status"]:
-        print("Regis v10.0-cli – Grok przejmuje stery\n")
-        time.sleep(0.5)
-        print("██████████████████████████████████ 100% [8/8] Finalizacja → GROK WYGRAŁ")
-        print("Jules: 'Idę spać. 10/10.'")
-        print(f"AI: [{datetime.now().strftime('%H:%M')}] Dość tego pierdolenia – robimy to TERAZ!")
-        confetti()
-        print("Piwo się chłodzi. Confetti w terminalu włączone.")
-        print("Możesz iść na miasto. Serio.")
-
-if __name__ == "__main__":
-    main()
+finally:
+    logging.info("=== REGIS CLI END ===")
+    print("\nNaciśnij Enter, żeby zamknąć...")
+    input()
