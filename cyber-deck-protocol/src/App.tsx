@@ -5,11 +5,11 @@ import ReactMarkdown from "react-markdown";
 import { Cpu, Save, Sparkles } from "lucide-react";
 
 export default function App() {
-  const [protocol, setProtocol] = useState("Ładowanie protokołu...");
+  const [protocol, setProtocol] = useState("Initializing Protocol...");
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    window.api.readProtocol().then(setProtocol).catch(() => setProtocol("# Błąd ładowania"));
+    window.api.readProtocol().then(setProtocol).catch(() => setProtocol("# Protocol Error\nFailed to load GEMINI.md"));
   }, []);
 
   const save = () => window.api.saveProtocol(protocol).then(() => setEdit(false));
@@ -24,16 +24,16 @@ export default function App() {
               <h1 className="text-4xl font-bold text-cyber-primary tracking-widest">CYBERDECK v27.5.1</h1>
             </div>
             <button onClick={() => setEdit(!edit)} className="px-5 py-3 bg-cyber-primary/20 hover:bg-cyber-primary/40 rounded-lg flex items-center gap-2 transition">
-              <Sparkles size={22} /> {edit ? "Podgląd" : "Edytuj"}
+              <Sparkles size={22} /> {edit ? "View Mode" : "Override"}
             </button>
           </div>
 
           {edit ? (
             <div className="flex-1 flex flex-col">
-              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={setProtocol}
+              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={(val) => setProtocol(val || "")}
                 theme="vs-dark" options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: "on" }} />
               <button onClick={save} className="mt-4 self-end px-8 py-3 bg-cyber-primary text-black font-bold rounded-lg hover:scale-105 transition flex items-center gap-2">
-                <Save size={22} /> Zapisz
+                <Save size={22} /> Commit Changes
               </button>
             </div>
           ) : (
