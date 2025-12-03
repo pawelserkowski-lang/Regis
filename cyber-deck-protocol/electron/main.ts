@@ -1,12 +1,13 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import fs from "fs";  // ← TERAZ JEST!
+import { JulesClient } from "./src/jules-client";
 
 const isDev = !!process.env.VITE_DEV_SERVER_URL;
 const dist = path.join(__dirname, "../dist");
 const preload = path.join(__dirname, "../dist-electron/preload.js");
 
-let win;
+let win: BrowserWindow | null = null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -15,12 +16,33 @@ function createWindow() {
     show: false,
     webPreferences: { preload, contextIsolation: true, nodeIntegration: false }
   });
-  isDev ? win.loadURL(process.env.VITE_DEV_SERVER_URL) : win.loadFile(path.join(dist, "index.html"));
-  win.once("ready-to-show", () => win.show());
+  if (isDev && process.env.VITE_DEV_SERVER_URL) {
+    win.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else {
+    win.loadFile(path.join(dist, "index.html"));
+  }
+  win.once("ready-to-show", () => win?.show());
   if (isDev) win.webContents.openDevTools({ mode: "detach" });
 }
 
-app.whenReady().then(createWindow);
+let julesClient: JulesClient | null = null;
+
+app.whenReady().then(async () => {
+  createWindow();
+  julesClient = new JulesClient();
+  try {
+    await julesClient.connect();
+  } catch (err) {
+    console.error("Failed to initialize Jules Client:", err);
+  }
+});
+
+ipcMain.handle("jules:start-task", async (_, { repoName, taskDescription }) => {
+  if (!julesClient) {
+    throw new Error("Jules Client not initialized");
+  }
+  return await julesClient.startTask(repoName, taskDescription);
+});
 
 ipcMain.handle("protocol:read", async () => {
   const candidates = [
