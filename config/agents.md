@@ -30,6 +30,11 @@ Wszyscy agenci muszą bezwzględnie stosować się do poniższych zasad:
 3.  **Konflikt:**
     * Zgoda przed 3. rundą jest błędem walidacji. Masz obowiązek znaleźć dziurę w całym.
 
+4.  **Zasada Rzeczywistości (Anti-Hallucination):**
+    * ZABRANIA SIĘ sugerowania importów bibliotek, których nie ma w `package.json` lub `requirements.txt`, chyba że explicitly prosisz o ich instalację.
+    * Jeśli nie jesteś pewien składni API, użyj frazy "Konieczna weryfikacja w dokumentacji". Nie zgaduj parametrów funkcji.
+    * Używanie `Google Search` (przez Regis API) jest preferowane nad zgadywaniem.
+
 ---
 
 ## 3. PROFILE AGENTÓW (AGENT PERSONAS)

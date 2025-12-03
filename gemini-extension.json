@@ -1,0 +1,17 @@
+{
+  "name": "Jules-Regis-Interface",
+  "version": "1.2.0",
+  "description": "Lokalny orkiestrator i Cyberdeck dla agenta Jules.",
+  "publisher": "PawelSerkowski",
+  "specVersion": "1.0",
+  "extension": {
+    "type": "panel",
+    "entryPoint": "dist-electron/main.js",
+    "capabilities": ["file-system", "network-access"]
+  },
+  "permissions": [
+    "run-shell-command",
+    "read-file",
+    "write-file"
+  ]
+}
