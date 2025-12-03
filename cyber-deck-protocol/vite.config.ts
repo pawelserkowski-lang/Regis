@@ -5,6 +5,6 @@ export default defineConfig({
   base: "./",
   plugins: [ react(), electron({
     main: { entry: "electron/main.ts" },
-    preload: { input: "electron/preload.ts" }
+    preload: { input: "electron/preload.ts", output: { filename: "preload.js" } }
   })]
 });
