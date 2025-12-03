@@ -6,7 +6,6 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "dev:web": "SKIP_ELECTRON=1 vite",
     "build": "tsc && vite build",
     "package": "tsc && vite build && electron-builder"
   },
