@@ -1,10 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import electron from 'vite-plugin-electron/simple';
+
 export default defineConfig({
-  base: "./",
-  plugins: [ react(), electron({
-    main: { entry: "electron/main.ts" },
-    preload: { input: "electron/preload.ts", output: { filename: "preload.js" } }
-  })]
+  plugins: [react()],
+  base: './',                    // ← BEZWZGLĘDNIE WAŻNE!
+  build: {
+    target: 'esnext',
+    outDir: 'dist',
+    assetsDir: '.',
+    sourcemap: false,
+  },
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
 });
