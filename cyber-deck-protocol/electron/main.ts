@@ -6,7 +6,7 @@ const isDev = !!process.env.VITE_DEV_SERVER_URL;
 const dist = path.join(__dirname, "../dist");
 const preload = path.join(__dirname, "../dist-electron/preload.js");
 
-let win: BrowserWindow | null = null;
+let win;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -15,31 +15,22 @@ function createWindow() {
     show: false,
     webPreferences: { preload, contextIsolation: true, nodeIntegration: false }
   });
-  if (isDev && process.env.VITE_DEV_SERVER_URL) {
-    win.loadURL(process.env.VITE_DEV_SERVER_URL)
-  } else {
-    win.loadFile(path.join(dist, "index.html"));
-  }
-  win.once("ready-to-show", () => win?.show());
+  isDev ? win.loadURL(process.env.VITE_DEV_SERVER_URL) : win.loadFile(path.join(dist, "index.html"));
+  win.once("ready-to-show", () => win.show());
   if (isDev) win.webContents.openDevTools({ mode: "detach" });
 }
 
 app.whenReady().then(createWindow);
 
-ipcMain.handle("protocol:read", async (_, filename = "GEMINI.md") => {
-  const ALLOWED_FILES = ["GEMINI.md", "DEBATE.md"];
-  if (!ALLOWED_FILES.includes(filename)) {
-    return "# ACCESS DENIED";
-  }
-
+ipcMain.handle("protocol:read", async () => {
   const candidates = [
-    path.join(process.cwd(), filename),
-    path.join(__dirname, "../../", filename)
+    path.join(process.cwd(), "GEMINI.md"),
+    path.join(__dirname, "../../GEMINI.md")
   ];
   for (const p of candidates) {
     if (fs.existsSync(p)) return await fs.promises.readFile(p, "utf-8");
   }
-  return `# ${filename} NOT FOUND`;
+  return "# PROTOCOL NOT FOUND";
 });
 
 ipcMain.handle("protocol:save", async (_, content) => {
