@@ -1,12 +1,13 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import fs from "fs";  // ← TERAZ JEST!
+import { spawn } from "child_process";
 
 const isDev = !!process.env.VITE_DEV_SERVER_URL;
 const dist = path.join(__dirname, "../dist");
 const preload = path.join(__dirname, "../dist-electron/preload.js");
 
-let win;
+let win: BrowserWindow | null = null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -15,8 +16,12 @@ function createWindow() {
     show: false,
     webPreferences: { preload, contextIsolation: true, nodeIntegration: false }
   });
-  isDev ? win.loadURL(process.env.VITE_DEV_SERVER_URL) : win.loadFile(path.join(dist, "index.html"));
-  win.once("ready-to-show", () => win.show());
+  if (isDev && process.env.VITE_DEV_SERVER_URL) {
+    win.loadURL(process.env.VITE_DEV_SERVER_URL);
+  } else {
+    win.loadFile(path.join(dist, "index.html"));
+  }
+  win.once("ready-to-show", () => win?.show());
   if (isDev) win.webContents.openDevTools({ mode: "detach" });
 }
 
@@ -36,4 +41,45 @@ ipcMain.handle("protocol:read", async () => {
 ipcMain.handle("protocol:save", async (_, content) => {
   await fs.promises.writeFile(path.join(process.cwd(), "GEMINI.md"), content);
   return true;
+});
+
+ipcMain.handle("agent:status", async () => {
+  const candidates = [
+    path.join(process.cwd(), "status_report.json"),
+    path.join(__dirname, "../../status_report.json"),
+    path.join(__dirname, "../../../status_report.json")
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return await fs.promises.readFile(p, "utf-8");
+  }
+  return null;
+});
+
+ipcMain.handle("agent:run", async () => {
+  return new Promise((resolve, reject) => {
+    // Determine where regis.py is
+    const candidates = [
+      path.join(process.cwd(), "regis.py"),
+      path.join(__dirname, "../../regis.py"),
+      path.join(__dirname, "../../../regis.py")
+    ];
+
+    const scriptPath = candidates.find(p => fs.existsSync(p));
+    if (!scriptPath) {
+      resolve({ success: false, error: "regis.py not found" });
+      return;
+    }
+
+    const python = spawn("python", [scriptPath], {
+      cwd: path.dirname(scriptPath)
+    });
+
+    python.on('close', (code) => {
+      resolve({ success: code === 0, code });
+    });
+
+    python.on('error', (err) => {
+      resolve({ success: false, error: err.message });
+    });
+  });
 });
