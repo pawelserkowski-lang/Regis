@@ -1,35 +1,83 @@
-import sys
-import argparse
-from debate import SimpleDebate
+import logging
+from typing import List, Dict, Any
 
-def main():
-    parser = argparse.ArgumentParser(description="Regis CLI - System Zarządzania i Debaty AI")
-    subparsers = parser.add_subparsers(dest="command", help="Dostępne komendy")
+# Import safe client for summarization
+try:
+    from gemini_client import generate_content_safe
+except ImportError:
+    # Fallback import
+    from .gemini_client import generate_content_safe
 
-    # Komenda: debate
-    debate_parser = subparsers.add_parser("debate", help="Uruchom debatę między agentami")
-    debate_parser.add_argument("topic", nargs="+", help="Temat debaty (np. 'Migracja na Rust')")
+logger = logging.getLogger(__name__)
 
-    # Komenda: status (przykładowa, dla zachowania ciągłości Twojego projektu)
-    status_parser = subparsers.add_parser("status", help="Sprawdź status systemu")
+class MemoryManager:
+    def __init__(self, token_limit: int = 8000, summary_threshold: float = 0.8):
+        self.history: List[Dict[str, str]] = []
+        self.token_limit = token_limit
+        self.summary_threshold = summary_threshold # 80% limit triggers cleanup
+        self.summary_model = "gemini-2.0-flash-exp" # Cheap model for note-taking
 
-    args = parser.parse_args()
+    def add_message(self, role: str, content: str):
+        """Adds a message and checks if memory needs cleaning."""
+        self.history.append({"role": role, "parts": [content]})
+        self._check_and_compress()
 
-    if args.command == "debate":
-        topic = " ".join(args.topic)
+    def get_history(self):
+        return self.history
+
+    def _estimate_tokens(self) -> int:
+        """
+        Rough token estimation (1 word ~ 1.3 tokens).
+        For production, use tiktoken or count_tokens method from Gemini API.
+        """
+        # A very rough approximation: 4 chars per token
+        if not self.history:
+            return 0
+        total_chars = sum(len(str(m.get("parts", [""])[0])) for m in self.history)
+        return int(total_chars / 4)
+
+    def _check_and_compress(self):
+        current_tokens = self._estimate_tokens()
+        logger.debug(f"Current memory usage: {current_tokens}/{self.token_limit} tokens.")
+
+        if current_tokens > (self.token_limit * self.summary_threshold):
+            logger.info("⚠️ Memory full. Initiating compression procedure (Summarization)...")
+            self._compress_history()
+
+    def _compress_history(self):
+        """
+        Takes the first half of the history, sends it to AI for summarization,
+        and replaces it with a single system message.
+        """
+        if len(self.history) < 4:
+            return # No point compressing 3 messages
+
+        # Split history in half
+        split_idx = len(self.history) // 2
+        old_messages = self.history[:split_idx]
+        recent_messages = self.history[split_idx:]
+
+        # Create summarization prompt
+        prompt = (
+            "You are an AI agent memory module. Below is a fragment of an older conversation. "
+            "Summarize it concisely, keeping key facts, established technical rules, "
+            "file paths, and user goals. Skip the pleasantries.\n\n"
+            f"CONVERSATION:\n{str(old_messages)}"
+        )
+
         try:
-            engine = SimpleDebate()
-            engine.run(topic)
+            summary_text = generate_content_safe(prompt, model_name=self.summary_model)
+            
+            summary_message = {
+                "role": "user", # Treating this as system input/injected context
+                "parts": [f"[SYSTEM MEMORY: Summary of previous conversation part: {summary_text}]"]
+            }
+
+            # New history = Summary + Newer messages
+            self.history = [summary_message] + recent_messages
+            logger.info("✅ Memory compression successful.")
+            
         except Exception as e:
-            print(f"❌ Wystąpił błąd podczas debaty: {e}")
-
-    elif args.command == "status":
-        print("✅ System Regis: ONLINE")
-        print("   Moduł debaty: GOTOWY")
-        print("   Cyber-deck: OCZEKIWANIE")
-
-    else:
-        parser.print_help()
-
-if __name__ == "__main__":
-    main()
+            logger.error(f"Failed to compress memory: {e}")
+            # Worst case: just slice off the oldest messages (FIFO)
+            self.history = self.history[2:]
