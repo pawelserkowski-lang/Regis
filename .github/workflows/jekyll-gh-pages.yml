@@ -1,0 +1,31 @@
+name: Jules → GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build --if-present   # ← tu trafia dist/build/public itp.
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist                # ← ZMIEŃ NA SWÓJ FOLDER Z BUILDEM
+          # popularne opcje:
+          # Vite → ./dist
+          # Next.js → ./out lub ./public
+          # Create-React-App → ./build
+          # Astro → ./dist
