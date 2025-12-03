@@ -1,18 +1,14 @@
 // src/preload/index.ts
 import { contextBridge, ipcRenderer } from 'electron';
-import fs from 'fs';
-import path from 'path';
 
 // Ładujemy nasz krytyczny fix Monaco workerów
 import './monaco-config';
 
-// Ścieżka do pliku GEMINI.md (w folderze z exe)
-const protocolPath = path.join(
-  process.env.PORTABLE_EXECUTABLE_DIR || process.cwd(),
-  'GEMINI.md'
-);
-
 // Eksponujemy bezpieczne API do renderera (App.tsx)
+contextBridge.exposeInMainWorld('api', {
+  readProtocol: (): Promise<string> => ipcRenderer.invoke('protocol:read'),
+  saveProtocol: (content: string): Promise<boolean> =>
+    ipcRenderer.invoke('protocol:save', content),
 contextBridge.exposeInMainWorld('electronAPI', {
   loadProtocol: async (): Promise<string> => {
     try {

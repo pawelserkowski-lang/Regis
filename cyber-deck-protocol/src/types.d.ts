@@ -2,6 +2,7 @@
 
 declare global {
   interface Window {
+    api?: {
     electronAPI: {
       loadProtocol: () => Promise<string>;
       saveProtocol: (content: string) => Promise<void>;
