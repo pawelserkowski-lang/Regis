@@ -1,30 +1,56 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-import fs from "fs";  // ← TERAZ JEST!
+import fs from "fs";
 
-const isDev = !!process.env.VITE_DEV_SERVER_URL;
+const devServerUrl = process.env.VITE_DEV_SERVER_URL ?? "";
+const isDev = devServerUrl !== "";
+const isMac = process.platform === "darwin";
 const dist = path.join(__dirname, "../dist");
 const preload = path.join(__dirname, "../dist-electron/preload.js");
+const protocolPath = path.join(process.cwd(), "GEMINI.md");
 
-let win;
+let win: BrowserWindow | null = null;
 
 function createWindow() {
-  win = new BrowserWindow({
-    width: 1500, height: 960,
+  const window = new BrowserWindow({
+    width: 1500,
+    height: 960,
     backgroundColor: "#050a0f",
     show: false,
     webPreferences: { preload, contextIsolation: true, nodeIntegration: false }
   });
-  isDev ? win.loadURL(process.env.VITE_DEV_SERVER_URL) : win.loadFile(path.join(dist, "index.html"));
-  win.once("ready-to-show", () => win.show());
-  if (isDev) win.webContents.openDevTools({ mode: "detach" });
+
+  if (isDev && devServerUrl) {
+    window.loadURL(devServerUrl);
+    window.webContents.openDevTools({ mode: "detach" });
+  } else {
+    window.loadFile(path.join(dist, "index.html"));
+  }
+
+  window.once("ready-to-show", () => window.show());
+  window.on("closed", () => {
+    win = null;
+  });
+
+  win = window;
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    else BrowserWindow.getAllWindows()[0].focus();
+  });
+});
+
+app.on("window-all-closed", () => {
+  if (!isMac) app.quit();
+});
 
 ipcMain.handle("protocol:read", async () => {
   const candidates = [
-    path.join(process.cwd(), "GEMINI.md"),
+    protocolPath,
     path.join(__dirname, "../../GEMINI.md")
   ];
   for (const p of candidates) {
@@ -33,7 +59,7 @@ ipcMain.handle("protocol:read", async () => {
   return "# PROTOCOL NOT FOUND";
 });
 
-ipcMain.handle("protocol:save", async (_, content) => {
-  await fs.promises.writeFile(path.join(process.cwd(), "GEMINI.md"), content);
+ipcMain.handle("protocol:save", async (_, content: string) => {
+  await fs.promises.writeFile(protocolPath, content, "utf-8");
   return true;
 });

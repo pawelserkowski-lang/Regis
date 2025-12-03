@@ -13,6 +13,7 @@ export default function App() {
   }, []);
 
   const save = () => window.api.saveProtocol(protocol).then(() => setEdit(false));
+  const handleEditorChange = (value?: string) => setProtocol(value ?? "");
 
   return (
     <div className="h-screen w-screen bg-cyber-bg text-white flex">
@@ -30,7 +31,7 @@ export default function App() {
 
           {edit ? (
             <div className="flex-1 flex flex-col">
-              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={setProtocol}
+              <Editor height="100%" defaultLanguage="markdown" value={protocol} onChange={handleEditorChange}
                 theme="vs-dark" options={{ fontSize: 16, minimap: { enabled: false }, wordWrap: "on" }} />
               <button onClick={save} className="mt-4 self-end px-8 py-3 bg-cyber-primary text-black font-bold rounded-lg hover:scale-105 transition flex items-center gap-2">
                 <Save size={22} /> Zapisz
