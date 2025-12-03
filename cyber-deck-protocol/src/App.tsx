@@ -1,34 +1,87 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import './index.css';
+
+const DEFAULT_PROTOCOL = `# CYBERDECK v27.5.1 — ONLINE
+
+Neural Engine active • No hallucinations • Live editing • Neon interface
+
+Edytuj ten tekst → nacisnij Ctrl+S → Zapisz protokół → odświeża się automatycznie
+
+Ready to jack in, runner?
+
+NEON`;
 
 function App() {
   const [value, setValue] = useState<string>('');
   const [saved, setSaved] = useState(false);
 
-  // Ładujemy GEMINI.md przy starcie
+  const loadProtocol = useCallback(async () => {
+    if (window.api?.readProtocol) {
+      try {
+        const content = await window.api.readProtocol();
+        setValue(content || DEFAULT_PROTOCOL);
+        return;
+      } catch (err) {
+        console.error('Błąd ładowania protokołu z Electron:', err);
+      }
+    }
+
+    const cached = localStorage.getItem('protocol');
+    if (cached) {
+      setValue(cached);
+      return;
+    }
+
+    try {
+      const response = await fetch('/GEMINI.md');
+      if (response.ok) {
+        const content = await response.text();
+        setValue(content || DEFAULT_PROTOCOL);
+        return;
+      }
+    } catch (err) {
+      console.error('Błąd ładowania GEMINI.md przez HTTP:', err);
+    }
+
+    setValue(DEFAULT_PROTOCOL);
+  }, []);
+
   useEffect(() => {
-    window.electronAPI.loadProtocol().then((content: string) => {
-      setValue(content || '# CYBERDECK v27.5.1 — ONLINE\n\nNeural Engine active • No hallucinations • Live editing • Neon interface\n\nEdytuj ten tekst → nacisnij Ctrl+S → Zapisz protokół → odświeża się automatycznie\n\nReady to jack in, runner?\n\nNEON');
-    });
+    loadProtocol();
+  }, [loadProtocol]);
+
+  const persistProtocol = useCallback(async (content: string) => {
+    if (window.api?.saveProtocol) {
+      try {
+        await window.api.saveProtocol(content);
+        return;
+      } catch (err) {
+        console.error('Błąd zapisu w Electron:', err);
+      }
+    }
+
+    localStorage.setItem('protocol', content);
   }, []);
 
   // Auto-zapis co 2 sekundy + Ctrl+S
   useEffect(() => {
     const timer = setTimeout(() => {
       if (value) {
-        window.electronAPI.saveProtocol(value);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 1000);
+        void persistProtocol(value).then(() => {
+          setSaved(true);
+          setTimeout(() => setSaved(false), 1000);
+        });
       }
     }, 2000);
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === 's') {
         e.preventDefault();
-        window.electronAPI.saveProtocol(value);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 1500);
+        void persistProtocol(value).then(() => {
+          setSaved(true);
+          setTimeout(() => setSaved(false), 1500);
+        });
       }
     };
 
@@ -37,7 +90,7 @@ function App() {
       clearTimeout(timer);
       window.removeEventListener('keydown', handleKey);
     };
-  }, [value]);
+  }, [persistProtocol, value]);
 
   // Easter egg – wpisz /regis wake up
   useEffect(() => {
