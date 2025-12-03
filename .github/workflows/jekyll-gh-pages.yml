@@ -1,44 +1,31 @@
-name: Jules → Test → Deploy
+name: Jules → GitHub Pages
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  test:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v4
-        with: { node-version: 20, cache: npm }
+        with:
+          node-version: 20
+          cache: npm
+
       - run: npm ci
-      - run: npm run lint --if-present
-      - run: npm test --if-present
-      - run: npm run build --if-present
+      - run: npm run build --if-present   # ← tu trafia dist/build/public itp.
 
-  deploy-staging:
-    needs: test
-    runs-on: ubuntu-latest
-    environment: staging          # ← auto-deploy, zero approval
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy Staging (Vercel przykład)
-        run: npx vercel --prod --yes
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-
-  deploy-production:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    environment: production       # ← tutaj wymaga Twojego kliknięcia
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy Production
-        run: npx vercel --prod --yes
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROD_PROJECT_ID }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist                # ← ZMIEŃ NA SWÓJ FOLDER Z BUILDEM
+          # popularne opcje:
+          # Vite → ./dist
+          # Next.js → ./out lub ./public
+          # Create-React-App → ./build
+          # Astro → ./dist
