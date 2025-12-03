@@ -41,3 +41,44 @@ ipcMain.handle("protocol:save", async (_, content) => {
   await fs.promises.writeFile(path.join(process.cwd(), "GEMINI.md"), content);
   return true;
 });
+
+ipcMain.handle("agent:status", async () => {
+  const candidates = [
+    path.join(process.cwd(), "status_report.json"),
+    path.join(__dirname, "../../status_report.json"),
+    path.join(__dirname, "../../../status_report.json")
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return await fs.promises.readFile(p, "utf-8");
+  }
+  return null;
+});
+
+ipcMain.handle("agent:run", async () => {
+  return new Promise((resolve, reject) => {
+    // Determine where regis.py is
+    const candidates = [
+      path.join(process.cwd(), "regis.py"),
+      path.join(__dirname, "../../regis.py"),
+      path.join(__dirname, "../../../regis.py")
+    ];
+
+    const scriptPath = candidates.find(p => fs.existsSync(p));
+    if (!scriptPath) {
+      resolve({ success: false, error: "regis.py not found" });
+      return;
+    }
+
+    const python = spawn("python", [scriptPath], {
+      cwd: path.dirname(scriptPath)
+    });
+
+    python.on('close', (code) => {
+      resolve({ success: code === 0, code });
+    });
+
+    python.on('error', (err) => {
+      resolve({ success: false, error: err.message });
+    });
+  });
+});

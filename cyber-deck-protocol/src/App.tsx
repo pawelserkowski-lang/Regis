@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { GlassCard } from "./components/GlassCard";
+import { RegisStatus } from "./components/RegisStatus";
 import Editor from "@monaco-editor/react";
 import ReactMarkdown from "react-markdown";
 import { Cpu, Save, Sparkles, Terminal, Code2, Eye } from "lucide-react";
 
 export default function App() {
   const [protocol, setProtocol] = useState("Ładowanie protokołu...");
-  const [edit, setEdit] = useState(false);
+  const [mode, setMode] = useState<"view" | "edit" | "agent">("view");
 
   useEffect(() => {
     // Mock API for development if window.api is missing (though in Electron it should be there)
