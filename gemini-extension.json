@@ -1,13 +1,22 @@
 {
   "name": "Jules-Regis-Interface",
-  "version": "1.2.0",
-  "description": "Lokalny orkiestrator i Cyberdeck dla agenta Jules.",
+  "version": "1.3.0",
+  "description": "Lokalny orkiestrator i Cyberdeck dla agenta Jules. Zoptymalizowany pod kątem kosztów i bezpieczeństwa.",
   "publisher": "PawelSerkowski",
   "specVersion": "1.0",
   "extension": {
     "type": "panel",
     "entryPoint": "dist-electron/main.js",
     "capabilities": ["file-system", "network-access"]
+  },
+  "configuration": {
+    "properties": {
+      "GEMINI_API_KEY": {
+        "type": "string",
+        "description": "Klucz API Google Gemini wymagany do działania mózgu Julesa.",
+        "required": true
+      }
+    }
   },
   "permissions": [
     "run-shell-command",

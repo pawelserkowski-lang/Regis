@@ -1,0 +1,17 @@
+{
+  "name": "Jules-Regis-Interface-Pro",
+  "version": "2.0.0",
+  "description": "Zoptymalizowany, asynchroniczny orkiestrator dla agenta Jules z ochroną tokenów.",
+  "publisher": "PawelSerkowski",
+  "specVersion": "1.0",
+  "extension": {
+    "type": "panel",
+    "entryPoint": "regis_cli.py",
+    "capabilities": ["file-system", "network-access"]
+  },
+  "permissions": [
+    "run-shell-command",
+    "read-file",
+    "write-file"
+  ]
+}
