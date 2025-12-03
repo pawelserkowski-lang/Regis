@@ -1,10 +1,13 @@
 {
   "name": "cyber-deck-protocol",
   "version": "27.5.1",
+  "description": "Cyberdeck markdown protocol editor",
+  "author": "Regis team",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && electron-builder"
+    "build": "tsc && vite build",
+    "package": "tsc && vite build && electron-builder"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
