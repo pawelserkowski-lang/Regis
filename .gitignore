@@ -1,14 +1,15 @@
-# Node.js
-node_modules/
-dist/
-dist-electron/
-release/
-.DS_Store
+# --- OGÓLNE ARTEFAKTY SYSTEMOWE ---
+.DS_Store # Mac OS
+Thumbs.db # Windows
+*.log
+*.zip
+*.tar
+*.rar
+*.7z
 
-# Python
+# --- PYTHON (Utrzymano i Rozszerzono) ---
+# Katalogi
 __pycache__/
-*.py[cod]
-*$py.class
 venv/
 .env
 
@@ -17,3 +18,29 @@ venv/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# Pliki skompilowane/binarne
+*.py[cod]
+*$py.class
+*.exe # Wszystkie pliki wykonywalne Windows
+
+# PyInstaller i build
+build/
+dist/
+*.spec
+*.toc
+*.pkg
+
+# --- JAVASCRIPT / NODE / FRONTEND (Rozszerzono) ---
+# Katalogi zależności
+node_modules/
+
+# Katalogi budowania
+dist-electron/
+release/
+temp/
+
+# Cache i pliki tymczasowe
+.vite/ # Cache dla Vite (znaleziony w cyber-deck-protocol)
+*.map # Source maps
+package-lock.json
+yarn.lock
