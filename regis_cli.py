@@ -1,33 +1,35 @@
-# regis_cli.py – CLI Wrapper for Regis Agent
 import sys
-import logging
-from regis import RegisAgent
-
-# Configure logging
-logging.basicConfig(
-    filename='regis_debug.log',
-    level=logging.DEBUG,
-    format='%(asctime)s | %(levelname)s | %(message)s',
-    encoding='utf-8'
-)
+import argparse
+from debate import SimpleDebate
 
 def main():
-    try:
-        logging.info("Starting Regis CLI...")
-        print("=== REGIS CLI ===")
+    parser = argparse.ArgumentParser(description="Regis CLI - System Zarządzania i Debaty AI")
+    subparsers = parser.add_subparsers(dest="command", help="Dostępne komendy")
 
-        agent = RegisAgent()
-        print(f"Agent: {agent.name} v{agent.version}")
+    # Komenda: debate
+    debate_parser = subparsers.add_parser("debate", help="Uruchom debatę między agentami")
+    debate_parser.add_argument("topic", nargs="+", help="Temat debaty (np. 'Migracja na Rust')")
 
-        # Execute the agent's main logic
-        agent.save_report()
+    # Komenda: status (przykładowa, dla zachowania ciągłości Twojego projektu)
+    status_parser = subparsers.add_parser("status", help="Sprawdź status systemu")
 
-        logging.info("Regis finished successfully.")
-        print("\n✅ Proces zakończony sukcesem.")
+    args = parser.parse_args()
 
-    except Exception as e:
-        logging.critical(f"Regis crashed: {e}", exc_info=True)
-        print(f"\n❌ Błąd krytyczny: {e}")
+    if args.command == "debate":
+        topic = " ".join(args.topic)
+        try:
+            engine = SimpleDebate()
+            engine.run(topic)
+        except Exception as e:
+            print(f"❌ Wystąpił błąd podczas debaty: {e}")
+
+    elif args.command == "status":
+        print("✅ System Regis: ONLINE")
+        print("   Moduł debaty: GOTOWY")
+        print("   Cyber-deck: OCZEKIWANIE")
+
+    else:
+        parser.print_help()
 
 if __name__ == "__main__":
     main()
