@@ -1,0 +1,10 @@
+@tailwind base;
+@media base {
+  body { background: #000; color: #fff; font-family: monospace; }
+  .scanlines { position: fixed; top: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%); background-size: 100% 4px; pointer-events: none; }
+  .cyber-card { background: rgba(0,20,40,0.7); border: 1px solid cyan; box-shadow: 0 0 10px cyan; }
+  .cyber-progress-container { height: 10px; background: #333; }
+  .cyber-progress-bar { height: 100%; background: cyan; }
+}
+@tailwind components;
+@tailwind utilities;
