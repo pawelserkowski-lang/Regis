@@ -6,6 +6,7 @@ from gemini_client import generate_content_safe
 
 # Definicje błędów (Hierarchia)
 class RegisError(Exception): pass
+class JulesError(RegisError): pass  # Alias for compatibility if needed or separate error
 class BrainConnectionError(RegisError): pass
 class ContextError(RegisError): pass
 
