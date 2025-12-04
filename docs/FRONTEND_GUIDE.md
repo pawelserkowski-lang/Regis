@@ -58,3 +58,20 @@ Aby uruchomić sam frontend bez Electrona (np. do testów w przeglądarce):
 npm run dev:headless
 ```
 (Wymaga odpowiedniej konfiguracji `vite.headless.config.ts` i mockowania `window.api`).
+
+## Uruchomienie Aplikacji (Desktop)
+
+W katalogu głównym projektu znajdują się skrypty ułatwiające uruchomienie pełnego środowiska (Electron + React):
+
+1.  **Skrypt startowy**:
+    ```bash
+    ./run_linux.sh
+    ```
+    Uruchamia aplikację w trybie deweloperskim.
+
+2.  **Skrót Pulpitowy**:
+    Aby wygenerować skrót `.desktop` (np. do umieszczenia na pulpicie lub w menu aplikacji), uruchom:
+    ```bash
+    ./generate_shortcut.sh
+    ```
+    Skrypt utworzy plik `CyberDeck.desktop` w głównym katalogu, który można przenieść w dowolne miejsce (np. `~/Desktop`).
