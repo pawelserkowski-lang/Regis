@@ -15,6 +15,24 @@ NEON`;
 function App() {
   const [value, setValue] = useState<string>('');
   const [saved, setSaved] = useState(false);
+  const [agentStatus, setAgentStatus] = useState<any>(null);
+
+  const loadStatus = useCallback(async () => {
+    if (window.api?.readAgentStatus) {
+      try {
+        const json = await window.api.readAgentStatus();
+        setAgentStatus(JSON.parse(json));
+      } catch (err) {
+        console.error('Error reading status:', err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    loadStatus();
+    const interval = setInterval(loadStatus, 5000);
+    return () => clearInterval(interval);
+  }, [loadStatus]);
 
   const loadProtocol = useCallback(async () => {
     if (window.api?.readProtocol) {
@@ -143,8 +161,15 @@ function App() {
         )}
       </div>
 
-      <footer className="bg-gradient-to-r from-purple-900 to-cyan-900 p-3 text-center text-sm">
-        <span className="animate-pulse">NEON PROTOCOL ACTIVE</span> • Ctrl+S = szybki zapis • /regis wake up = surprise
+      <footer className="bg-gradient-to-r from-purple-900 to-cyan-900 p-3 text-center text-sm flex justify-between px-6">
+        <span>
+            <span className="animate-pulse">NEON PROTOCOL ACTIVE</span> • Ctrl+S = szybki zapis
+        </span>
+        {agentStatus && (
+            <span className="text-green-400 font-bold">
+                AGENT: {agentStatus.status || "Unknown"} | {agentStatus.progress?.phase || "Idle"}
+            </span>
+        )}
       </footer>
     </div>
   );

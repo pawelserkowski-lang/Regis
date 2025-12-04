@@ -1,3 +1,9 @@
 
 > cyber-deck-protocol@27.5.1 dev
-> vite
+> vite --port 3000
+
+
+  VITE v7.2.6  ready in 258 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose

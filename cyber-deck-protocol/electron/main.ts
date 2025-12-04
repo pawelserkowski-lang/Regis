@@ -8,6 +8,7 @@ const isMac = process.platform === "darwin";
 const dist = path.join(__dirname, "../dist");
 const preload = path.join(__dirname, "../dist-electron/preload.js");
 const protocolPath = path.join(process.cwd(), "GEMINI.md");
+const statusPath = path.join(process.cwd(), "status_report.json");
 
 let win: BrowserWindow | null = null;
 
@@ -62,4 +63,15 @@ ipcMain.handle("protocol:read", async () => {
 ipcMain.handle("protocol:save", async (_, content: string) => {
   await fs.promises.writeFile(protocolPath, content, "utf-8");
   return true;
+});
+
+ipcMain.handle("agent:status", async () => {
+  const candidates = [
+    statusPath,
+    path.join(__dirname, "../../status_report.json")
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return await fs.promises.readFile(p, "utf-8");
+  }
+  return JSON.stringify({ status: "Offline", error: "No status report found" });
 });
