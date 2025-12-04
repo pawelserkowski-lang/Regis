@@ -17,7 +17,23 @@ Kompletna dokumentacja techniczna projektu znajduje się w katalogu `docs/`:
     ```bash
     ./setup.sh
     ```
-2.  Uruchom aplikację:
+2.  Uruchom aplikację (Linux):
+    ```bash
+    ./run_linux.sh
+    ```
+    Lub użyj skrótu na pulpicie (patrz niżej).
+
+    (Windows):
     ```bash
     ./cyber-deck-protocol/run.bat
     ```
+
+## Skrót Pulpitowy (Linux)
+
+Aby utworzyć skrót uruchamiający aplikację z poziomu pulpitu, wykonaj:
+
+```bash
+./generate_shortcut.sh
+```
+
+Utworzony plik `CyberDeck.desktop` możesz przenieść na pulpit.
