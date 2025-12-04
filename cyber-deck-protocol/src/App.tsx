@@ -120,12 +120,27 @@ function App() {
     }
   }, [value]);
 
+  const handleRunJules = useCallback(async () => {
+      if (window.api?.runJules) {
+          // Pass current file content if needed, or path if it's saved.
+          // Since we edit GEMINI.md in place, we can tell Jules to analyze GEMINI.md
+          console.log("Triggering Google Jules...");
+          await window.api.runJules({ file: "GEMINI.md", context: "Full Audit requested by user." });
+      }
+  }, []);
+
   return (
     <div className="h-screen flex flex-col bg-black text-cyan-400 font-mono">
-      <header className="bg-gradient-to-r from-purple-900 to-cyan-900 p-4 shadow-lg shadow-cyan-500/50">
+      <header className="bg-gradient-to-r from-purple-900 to-cyan-900 p-4 shadow-lg shadow-cyan-500/50 flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-wider animate-pulse">
           CYBERDECK v27.5.1 <span className="text-green-400">— ONLINE</span>
         </h1>
+        <button
+            onClick={handleRunJules}
+            className="bg-green-700 hover:bg-green-600 text-black px-4 py-2 rounded font-bold border border-green-400 shadow-[0_0_10px_#00ff00]"
+        >
+            [ RUN JULES AUDIT ]
+        </button>
       </header>
 
       <div className="flex-1 relative">

@@ -8,5 +8,6 @@ interface Window {
     askAI: (question: string) => Promise<string>;
     readAgentStatus: () => Promise<string>;
     runAgent: () => Promise<string>;
+    runJules: (payload: {context?: string, file?: string}) => Promise<{success: boolean}>;
   };
 }

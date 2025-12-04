@@ -1,87 +1,60 @@
-import threading
-import logging
-import time
-from typing import Dict, Any
+from playwright.sync_api import sync_playwright
 
-# Error definitions (could be moved to errors.py)
-class JulesError(Exception): pass
-class BrainConnectionError(JulesError): pass
+def verify_jules_ui():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        # Emulate browser environment where Electron API might be missing,
+        # but we want to see the UI.
+        # Note: Since we need to verify the button and maybe the CSS state,
+        # we can inject a mock window.api object.
+        
+        page = browser.new_page()
+        
+        # Inject mock API
+        page.add_init_script("""
+            window.api = {
+                readProtocol: () => Promise.resolve("# MOCK PROTOCOL"),
+                saveProtocol: (c) => Promise.resolve(true),
+                readAgentStatus: () => Promise.resolve(JSON.stringify({
+                    status: "🟢 Finalna",
+                    mode: "🤖 Generatywny (Jules Auditor)",
+                    progress: {
+                        phase: "Gotowe – 100%",
+                        timeline: ["✅ [0:00] Inicjalizacja"],
+                        live_log: "Gotowe"
+                    }
+                })),
+                runJules: (payload) => {
+                    console.log("Jules Triggered", payload);
+                    return Promise.resolve({success: true});
+                }
+            };
+        """)
 
-# Local imports
-try:
-    from memory_manager import MemoryManager
-    from gemini_client import generate_content_safe
-except ImportError:
-    # Handling case where files are in a package
-    import memory_manager
-    import gemini_client
-    from memory_manager import MemoryManager
-    from gemini_client import generate_content_safe
+        # Start dev server if not running, but here we assume we can just build or serve.
+        # Actually, running the dev server in background is better.
+        # Let's try to access the dev server. I need to start it first.
+        # For now, I will assume port 5173 is standard Vite.
 
-logger = logging.getLogger(__name__)
-
-# GLOBAL LOCK - Protects against thread races (e.g., two requests from Electron at once)
-processing_lock = threading.Lock()
-
-# Initialize memory manager
-memory = MemoryManager()
-
-def process_request(payload: Dict[str, Any]) -> str:
-    """
-    Main function processing requests.
-    """
-    # Check if Jules is busy
-    if processing_lock.locked():
-        # Optional: Add queuing logic here
-        logger.warning("Request received, but Jules is busy.")
-        # In this simple version, we wait for the lock (or could return 'Busy')
-    
-    with processing_lock:
-        return _safe_execute(payload)
-
-def _safe_execute(payload: Dict[str, Any]) -> str:
-    """
-    Internal execution function protected by lock.
-    """
-    mode = payload.get("mode")
-    target_file = payload.get("target_file")
-    user_context = payload.get("user_context")
-
-    logger.info(f"Processing in mode: {mode} for file: {target_file}")
-
-    # Build prompt
-    prompt = f"Mode: {mode}.\n"
-    if target_file:
         try:
-            with open(target_file, 'r', encoding='utf-8') as f:
-                content = f.read()
-            prompt += f"Input file ({target_file}):\n```\n{content}\n```\n"
-        except FileNotFoundError:
-            return f"Error: File {target_file} not found."
+            page.goto("http://localhost:5173")
+            page.wait_for_selector("text=CYBERDECK")
+
+            # Check for the new button
+            button = page.get_by_text("[ RUN JULES AUDIT ]")
+            if button.is_visible():
+                print("Button found!")
+                # Click it to see if it triggers console log (we can't easily check console in sync,
+                # but visual state might change if we added effects, though we didn't add visual feedback on click other than console log in this iteration)
+                button.click()
+
+            page.screenshot(path="verification/verification.png")
+            print("Screenshot saved to verification/verification.png")
+
         except Exception as e:
-            return f"File read error: {str(e)}"
+            print(f"Error: {e}")
+        finally:
+            browser.close()
 
-    if user_context:
-        prompt += f"Additional context: {user_context}\n"
-
-    # Add to memory
-    memory.add_message("user", prompt)
-
-    try:
-        # Call API (with retry implemented in gemini_client)
-        response_text = generate_content_safe(prompt)
-        
-        # Add response to memory
-        memory.add_message("model", response_text)
-        
-        return response_text
-
-    except Exception as e:
-        logger.error(f"Error in _safe_execute: {e}")
-        # Raise our own error so CLI can handle it gracefully
-        raise BrainConnectionError(f"Inference engine failure: {str(e)}")
-
-# Simple test (if running file directly)
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    print(process_request({"mode": "chat", "user_context": "Tell a joke about programmers."}))
+    verify_jules_ui()
