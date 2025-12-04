@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  regis-backend:
+    build: ./backend
+    container_name: regis-brain
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
