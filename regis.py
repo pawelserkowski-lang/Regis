@@ -1,8 +1,33 @@
 import threading
 import logging
+import json  # [DODANO] Wymagane do serializacji konfiguracji agenta
 from typing import Dict, Any
 from memory_manager import MemoryManager
 from gemini_client import generate_content_safe
+
+# --- WSTRZYKNIĘCIE ARCY-PROMPTU V4.0 (Jules Auditor) ---
+_ARCY_DATA = {
+  "Meta": { 
+      "Rola": "Regis System (Jules)", 
+      "Tryb": "DEBATE & NO-INTERRUPTION" 
+  },
+  "Metaprompting": {
+    "Zasada": "Używaj Skeleton-of-Thought. Najpierw plan, potem debata agentów (Architekt, Hacker, PM), na końcu 6 rozwiązań.",
+    "Output": "Zawsze zwracaj odpowiedź w formacie Markdown."
+  },
+  "Agenci": [
+      "Agent Architekt (Czystość kodu)", 
+      "Agent Hacker (Bezpieczeństwo/Skróty)", 
+      "Agent PM (Priorytety/Koszty)"
+  ],
+  "Nakaz": "Po wygenerowaniu planu NIE PYTAJ o zgodę. Wykonaj analizę."
+}
+
+SYSTEM_INSTRUCTION = f"""
+JESTEŚ ZAAWANSOWANYM SYSTEMEM 'REGIS'. DZIAŁAJ WEDŁUG KONFIGURACJI:
+{json.dumps(_ARCY_DATA, indent=2, ensure_ascii=False)}
+"""
+# -------------------------------------------------------
 
 # Definicje błędów (Hierarchia)
 class RegisError(Exception): pass
@@ -29,7 +54,8 @@ def _safe_execute(payload: Dict[str, Any]) -> str:
     logger.info(f"Processing mode: {mode}")
 
     # Budowanie promptu z obsługą błędów plikowych
-    prompt_parts = [f"Mode: {mode}."]
+    # [ZMODYFIKOWANO] Dodano SYSTEM_INSTRUCTION na początku listy
+    prompt_parts = [SYSTEM_INSTRUCTION, f"Mode: {mode}."]
     
     if target_file:
         try:
