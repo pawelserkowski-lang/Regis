@@ -1,3 +1,58 @@
-@tailwind base; @tailwind components; @tailwind utilities;
-html,body,#root{height:100%;margin:0;overflow:hidden;background:#050a0f}
-::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:rgba(45,212,191,0.6);border-radius:4px}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background-color: #020403;
+  color: #00ff88;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #020403;
+}
+::-webkit-scrollbar-thumb {
+  background: #003311;
+  border: 1px solid #00ff88;
+  border-radius: 0; /* Boxy aesthetic */
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff88;
+}
+
+/* Utility classes for specific effects */
+@layer utilities {
+  .text-shadow-neon {
+    text-shadow: 0 0 5px #00ff88, 0 0 10px rgba(0, 255, 136, 0.5);
+  }
+
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  .scanline-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 255, 136, 0.02) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 50;
+  }
+}
