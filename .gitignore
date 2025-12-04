@@ -39,3 +39,4 @@ temp/
 *.map # Source maps
 package-lock.json
 yarn.lock
+Regis.zip
