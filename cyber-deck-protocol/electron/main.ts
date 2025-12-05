@@ -53,7 +53,8 @@ app.on("window-all-closed", () => {
 ipcMain.handle("protocol:read", async () => {
   const candidates = [
     protocolPath,
-    path.join(__dirname, "../../GEMINI.md")
+    path.join(__dirname, "../../GEMINI.md"),
+    path.join(process.cwd(), "../GEMINI.md")
   ];
   for (const p of candidates) {
     if (fs.existsSync(p)) return await fs.promises.readFile(p, "utf-8");
@@ -62,6 +63,12 @@ ipcMain.handle("protocol:read", async () => {
 });
 
 ipcMain.handle("protocol:save", async (_, content: string) => {
+  // Try to save to the root GEMINI.md if it exists, otherwise the local one
+  const rootPath = path.join(process.cwd(), "../GEMINI.md");
+  if (fs.existsSync(rootPath)) {
+      await fs.promises.writeFile(rootPath, content, "utf-8");
+      return true;
+  }
   await fs.promises.writeFile(protocolPath, content, "utf-8");
   return true;
 });
@@ -69,7 +76,8 @@ ipcMain.handle("protocol:save", async (_, content: string) => {
 ipcMain.handle("agent:status", async () => {
   const candidates = [
     statusPath,
-    path.join(__dirname, "../../status_report.json")
+    path.join(__dirname, "../../status_report.json"),
+    path.join(process.cwd(), "../status_report.json")
   ];
   for (const p of candidates) {
     if (fs.existsSync(p)) return await fs.promises.readFile(p, "utf-8");

@@ -1,10 +1,11 @@
-flask==3.0.0
-flask-cors==4.0.0
-psutil==5.9.8
-requests==2.31.0
-python-dotenv==1.0.1
-google-generativeai
 black
+flask-cors==4.0.0
+flask==3.0.0
+google-generativeai
 mkdocs
 mkdocs-material
+psutil==5.9.8
 pytest
+python-dotenv==1.0.1
+requests==2.31.0
+tenacity
