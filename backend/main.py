@@ -6,6 +6,12 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import psutil
 from datetime import datetime
+from gemini_client import GeminiGuard
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
@@ -30,6 +36,10 @@ def system_monitor_loop():
                 "plugged": plugged,
                 "net_io": psutil.net_io_counters().bytes_recv // 1024,
                 "status": "ONLINE",
+                "progress": {
+                    "phase": "IDLE",
+                    "task": "System Monitoring"
+                }
             }
 
             with open(REPORT_PATH + ".tmp", "w") as f:
@@ -54,9 +64,18 @@ def get_status():
 def chat():
     data = request.json
     user_message = data.get("message", "")
-    return jsonify(
-        {"response": f"Jules v2.0: Acknowledged. Processing input: '{user_message}'."}
-    )
+    logger.info(f"Received chat message: {user_message}")
+
+    try:
+        guard = GeminiGuard()
+        response_text = guard.generate_content(user_message)
+        logger.info("Generated response from Gemini")
+        return jsonify({"response": response_text})
+    except Exception as e:
+        logger.error(f"Error in chat endpoint: {e}")
+        return jsonify(
+            {"response": f"Jules v2.0: Acknowledged. Processing input: '{user_message}'. (Offline Mode or Error: {str(e)})"}
+        )
 
 
 if __name__ == "__main__":
@@ -64,4 +83,4 @@ if __name__ == "__main__":
     monitor_thread.start()
 
     print("\u1f680 [BACKEND] Regis Core online on port 5000...")
-    app.run(port=5000, host="0.0.0.0")
+    app.run(port=5000, host="0.0.0.0", debug=False)
