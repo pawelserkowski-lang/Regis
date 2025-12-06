@@ -6,53 +6,52 @@ html, body, #root {
   height: 100%;
   margin: 0;
   overflow: hidden;
-  background-color: #020403;
-  color: #00ff88;
+  background-color: #000000; /* Core Black */
+  color: #00FF41; /* Cyber Green */
+  font-family: 'Courier New', Courier, monospace;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 12px;
+  height: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: #020403;
+  background: #000000;
+  border-left: 1px solid #003B00;
 }
 ::-webkit-scrollbar-thumb {
-  background: #003311;
-  border: 1px solid #00ff88;
-  border-radius: 0; /* Boxy aesthetic */
+  background: #003B00; /* Dim Green */
+  border: 1px solid #00FF41; /* Cyber Green */
+  border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00ff88;
+  background: #00FF41;
 }
 
-/* Utility classes for specific effects */
 @layer utilities {
-  .text-shadow-neon {
-    text-shadow: 0 0 5px #00ff88, 0 0 10px rgba(0, 255, 136, 0.5);
+  .text-glow {
+    text-shadow: 0 0 5px #00FF41, 0 0 10px #00FF41;
   }
 
-  .bg-grid-pattern {
-    background-image:
-      linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
-    background-size: 30px 30px;
-  }
-
-  .scanline-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .scanlines {
     background: linear-gradient(
       to bottom,
-      transparent 50%,
-      rgba(0, 255, 136, 0.02) 50%
+      rgba(255,255,255,0),
+      rgba(255,255,255,0) 50%,
+      rgba(0,0,0,0.2) 50%,
+      rgba(0,0,0,0.2)
     );
     background-size: 100% 4px;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9999;
     pointer-events: none;
-    z-index: 50;
+  }
+
+  /* Utility for inputs - caret block */
+  .caret-block {
+    caret-shape: block; /* Experimental in some browsers, fallback via color/width */
+    caret-color: #00FF41;
   }
 }
